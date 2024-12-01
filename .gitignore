@@ -173,3 +173,11 @@ outputs/
 .vscode/
 .idea/
 __MACOSX/
+
+twitter-datasets/
+cooc.pkl 
+embeddings.npy
+vocab.pkl
+vocab_cut.txt
+vocab_full.txt
+submission.csv
