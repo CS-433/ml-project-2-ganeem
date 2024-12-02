@@ -3,6 +3,7 @@ import hydra
 import torch
 import pandas as pd
 import numpy as np
+import logging
 from omegaconf import DictConfig
 from pathlib import Path
 from scipy.special import softmax
@@ -13,6 +14,7 @@ from src.datasets.text_dataset import TextDataset
 from src.utils.text_utils import preprocess_batch
 from src.utils.init_utils import set_random_seed
 
+log = logging.getLogger(__name__)
 
 class Inferencer:
     """
@@ -27,6 +29,7 @@ class Inferencer:
         self.model = model
         self.config = config
         self.device = device
+        log.info("Initialized Inferencer")
 
     def get_binary_prediction(self, scores: np.ndarray) -> int:
         """
@@ -96,6 +99,7 @@ class Inferencer:
         batch_size = self.config.inference.batch_size
         assert batch_size > 0, "Batch size must be positive"
         
+        log.info("Starting inference...")
         for i in tqdm(range(0, len(dataset), batch_size), desc="Running inference"):
             batch_items = [dataset[j] for j in range(i, min(i + batch_size, len(dataset)))]
             batch_ids = [item[0] for item in batch_items]
@@ -104,12 +108,13 @@ class Inferencer:
             batch_predictions = self.predict_batch(batch_texts)
             results.extend(batch_predictions)
             ids.extend(batch_ids)
+        
+        log.info("Inference completed")
             
         return pd.DataFrame({
             'Id': ids,
             'Prediction': results
         })
-
 @hydra.main(version_base=None, config_path="src/configs", config_name="inference")
 def main(config: DictConfig) -> None:
     """
@@ -117,12 +122,12 @@ def main(config: DictConfig) -> None:
     """
     set_random_seed(config.inference.seed)
 
-    # set device
+    # Set device
     if config.inference.device == "auto":
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = config.inference.device
-    print(f"Using device: {device}")
+    log.info(f"Using device: {device}")
 
     model = SentimentModel(
         model_name=config.model.name,
@@ -133,7 +138,7 @@ def main(config: DictConfig) -> None:
         data_dir=config.data.data_dir,
         filename=config.data.input_file
     )
-    print(f"Loaded {len(dataset)} texts")
+    log.info(f"Loaded {len(dataset)} texts")
 
     inferencer = Inferencer(
         model=model,
@@ -147,10 +152,9 @@ def main(config: DictConfig) -> None:
     output_path.parent.mkdir(exist_ok=True, parents=True)
     predictions_df.to_csv(output_path, index=False)
     
-    print(f"Predictions saved to {output_path}")
-    print("\nPrediction statistics:")
-    print(predictions_df['Prediction'].value_counts())
-
+    log.info(f"Predictions saved to {output_path}")
+    log.info("\nPrediction statistics:")
+    log.info(f"\n{predictions_df['Prediction'].value_counts()}")
 
 if __name__ == "__main__":
     main()
