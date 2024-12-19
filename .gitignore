@@ -181,3 +181,5 @@ vocab.pkl
 vocab_cut.txt
 vocab_full.txt
 submission.csv
+
+/project_env
