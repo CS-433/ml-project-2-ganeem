@@ -8,8 +8,6 @@
   <a href="#about">About</a> •
   <a href="#installation">Installation</a> •
   <a href="#how-to-use">How To Use</a> •
-  <a href="#examples">Examples</a> •
-  <a href="#credits">Credits</a> •
 </p>
 
 ## About
@@ -51,47 +49,14 @@ Follow these steps:
    pip install -r requirements.txt
    ```
 
-2. Install `pre-commit`:
-   ```bash
-   pre-commit install
-   ```
-
 ## How To Use
 
-To train a model, run the following command:
+Download the dataset from AIcrowd and put them inside a folder called `data`, at the root of the project. (/data/train_pos.txt for example)
 
+You can then launch the jupyterlab environement to run the notebook with:
 ```bash
-python3 train.py -cn=CONFIG_NAME HYDRA_CONFIG_ARGUMENTS
+jupyter lab
 ```
+Then run the cells inside the notebook `finetuning.ipynb`. 
 
-Where `CONFIG_NAME` is a config from `src/configs` and `HYDRA_CONFIG_ARGUMENTS` are optional arguments.
-
-To run inference (evaluate the model or save predictions):
-
-```bash
-python3 inference.py HYDRA_CONFIG_ARGUMENTS
-```
-
-## Examples
-
-To train a simple MLP on MNIST, run:
-
-```bash
-python3 train.py model=baseline
-```
-
-If you want train your MLP on CIFAR-10, run this instead:
-
-```bash
-python3 train.py model=baseline model.n_feats=3072 datasets=cifar datasets/batch_transforms=cifar
-```
-
-If you want to fine-tune ResNet18 on CIFAR-10, run this:
-
-```bash
-python3 train.py model=resnet datasets=cifar model.input_channels=3 transforms/batch_transforms=cifar_resnet
-```
-
-## Credits
-
-This repository is based on a [PyTorch Project Template](https://github.com/Blinorot/pytorch_project_template).
+It contains the code that was used to fine-tune the model.
