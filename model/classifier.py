@@ -36,7 +36,7 @@ def load_training_data(pos_file, neg_file):
     return tweets, labels
 
 # Load training data
-tweets, labels = load_training_data("twitter-datasets/train_pos.txt", "twitter-datasets/train_neg.txt")
+tweets, labels = load_training_data("data/train_pos.txt", "data/train_neg.txt")
 
 # Convert tweets to features
 X = np.array([tweet_to_embedding(tweet.strip(), embeddings, vocab) for tweet in tweets])
@@ -46,14 +46,14 @@ Y = np.array(labels)
 X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2, random_state=44)
 
 # Train a simple logistic regression classifier
-classifier = LogisticRegression(max_iter=100)
+classifier = LogisticRegression(max_iter=100, verbose=3)
 classifier.fit(X_train, Y_train)
 
 y_val_pred = classifier.predict(X_val)
 print(f"Validation accuracy: {accuracy_score(Y_val, y_val_pred)}")
 
 # Load test data and evaluate
-with open("twitter-datasets/test_data.txt", "r", encoding="utf-8") as f:
+with open("data/test_data.txt", "r", encoding="utf-8") as f:
     test_tweets = f.readlines()
 
 X_test = np.array([tweet_to_embedding(tweet.strip(), embeddings, vocab) for tweet in test_tweets])
